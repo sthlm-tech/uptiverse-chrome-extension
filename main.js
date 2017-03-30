@@ -68,8 +68,8 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
   var x = new XMLHttpRequest();
   x.open('POST', searchUrl);
   x.setRequestHeader('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExMTE3ODgzMDU5NTU2MTU4MTkwNiIsImVtYWlsIjoib3NrYXIubGFyc3NvbkB1cHRpdmUuc2UiLCJ1c2VybmFtZSI6Im9za2FyLmxhcnNzb24iLCJuYW1lIjp7ImZpcnN0bmFtZSI6Im9za2FyIiwibGFzdG5hbWUiOiJsYXJzc29uIn0sImlhdCI6MTQ5MDg1ODg5MCwiZXhwIjoxNTA2NDEwODkwfQ.nCjIXO3ydSDbOVsFfFLyC0Y9Pxji3DuRVYGH2zJ-PxQ');
-
   x.setRequestHeader("Content-Type", "application/json");
+
   x.responseType = 'json';
   x.onload = function() {
     // Parse and process the response from uptiverse
@@ -100,7 +100,22 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
-function addCommentElement(comment) {
+function clearCommentArea() {
+   var commentArea = document.getElementById('comments');
+
+   var comments = document.getElementsByClassName('comment');
+   for(var i = comments.length - 1; 0 <= i; i--){
+      if(comments[i] && comments[i].parentElement){
+        comments[i].parentElement.removeChild(comments[i]);
+      }
+   }
+
+   
+   //commentArea.removeChild(commentArea.getElementsByClassName('comment'));
+}
+
+function renderCommentElement(comment) {
+  
   var mainElement = document.createElement("div");
   mainElement.className += 'comment';
   var commentMetadata = document.createElement("span");
@@ -111,17 +126,14 @@ function addCommentElement(comment) {
   var commentText = document.createElement("span");
   commentText.innerText = comment.text;
 
- 
 
 
   mainElement.appendChild(commentMetadata);
   mainElement.appendChild(document.createElement("br"));
-  mainElement.appendChild(document.createElement("br"));
   mainElement.appendChild(commentText);
   mainElement.appendChild(document.createElement("br"));
-  mainElement.appendChild(document.createElement("br"));
-  document.body.appendChild(document.createElement("br"));
-  document.body.appendChild(mainElement);
+  var commentArea = document.getElementById('comments');
+  commentArea.appendChild(mainElement);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -134,8 +146,9 @@ document.querySelector('#submit').addEventListener('click', function(event) {
 
         renderStatus(recruit.firstname + ' ' + recruit.lastname);
         recruit.comments.sort((a, b) => a.date < b.date);
+        clearCommentArea();
         recruit.comments.forEach(function (comment) {
-          addCommentElement(comment)
+          renderCommentElement(comment)
         });
 
     }, function(errorMessage) {

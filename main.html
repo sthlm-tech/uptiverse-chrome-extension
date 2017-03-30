@@ -20,15 +20,21 @@
         max-width: 800px;
         min-width: 300px;
         font-weight: bold;
+        margin-left: 10px;
       }
       .comment{
-        background-color: lightgray;
-
-        
+        background-color: cornsilk;
+        margin: 10px 10px 10px 10px;
       }
       .commentMetadata{
-          font-weight: bold;
+        
+        font-weight: bold;  
         }
+        .actionBar{
+          width: 100%;
+          margin: 10px 10px 10px 10px;
+        }
+
     </style>
 
     <!--
@@ -37,12 +43,14 @@
       -
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
      -->
-    <script src="popup.js"></script>
+    <script src="main.js"></script>
   </head>
   <body>
-   
-    <button id="submit">Get info!</button>
+      <div class="actionBar">
+      <button id="submit">Get info!</button>
+      </div>
      <div id="status"></div>
+     <div id="comments"></div>
     
   </body>
 </html>
