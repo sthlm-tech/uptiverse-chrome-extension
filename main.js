@@ -16,7 +16,7 @@ function getCurrentTabUrl(callback) {
     currentWindow: true
   };
 
-  chrome.tabs.query(queryInfo, function(tabs) {
+  chrome.tabs.query(queryInfo, function (tabs) {
     // chrome.tabs.query invokes the callback with a list of tabs that match the
     // query. When the popup is opened, there is certainly a window and at least
     // one tab, so we can safely assume that |tabs| is a non-empty array.
@@ -40,16 +40,21 @@ function getCurrentTabUrl(callback) {
 }
 
 
+const facebookUrl = 'https://facebook.com/';
+const linkedinUrl = 'https://linkedin.com/in/';
 
-
-var dummyResponseData = {"source":"name",
-"recruits":[
-  {"_id":"58433f51602e9b312ca2ac6a","lastname":"Dahlstrand","firstname":"Ulf","searchableName":"ulf dahlstrand",
-  "comments":[
-    {"user":"ulf.dahlstrand","date":"2016-12-07T16:40:12.416Z","text":"Detta är en test kommentar"},
-    {"user":"ulf.dahlstrand","date":"2016-12-16T16:40:12.416Z","text":"dfgsdfgdsf sdf dfg dfs g fdfd faeewr erew we w ew rwe r wer we rw fds sad fasd fasd fas dfdsa ds ds ds dfgsdfgdsf sdf dfg dfs g fdfd faeewr erew we w ew rwe r wer we rw fds sad fasd fasd fas dfdsa ds ds ds "}]
-  ,"__v":0,
-  "connections":{"linkedIn":"ulfdavidsson","facebook":"ulf.davidsson"}}]}
+var dummyResponseData = {
+  "source": "name",
+  "recruits": [
+    {
+      "_id": "58433f51602e9b312ca2ac6a", "lastname": "Dahlstrand", "firstname": "Ulf", "searchableName": "ulf dahlstrand",
+      "comments": [
+        { "user": "ulf.dahlstrand", "date": "2016-12-07T16:40:12.416Z", "text": "Detta är en test kommentar" },
+        { "user": "ulf.dahlstrand", "date": "2016-12-16T16:40:12.416Z", "text": "dfgsdfgdsf sdf dfg dfs g fdfd faeewr erew we w ew rwe r wer we rw fds sad fasd fasd fas dfdsa ds ds ds dfgsdfgdsf sdf dfg dfs g fdfd faeewr erew we w ew rwe r wer we rw fds sad fasd fasd fas dfdsa ds ds ds " }]
+      , "__v": 0,
+      "connections": { "linkedIn": "ulfdavidsson", "facebook": "ulf.davidsson" }
+    }]
+}
 /**
  * @param {string} currentUrl - the url of the current tab
  * @param {function(recruit)} callback - Called when a recruit is found
@@ -62,7 +67,7 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
   
   var searchUrl = 'https://uptiverse-recruit.herokuapp.com/recruits/find';
 
-  var searchParams = {"link": currentUrl};
+  var searchParams = { "link": currentUrl };
 
 
   var x = new XMLHttpRequest();
@@ -71,7 +76,7 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
   x.setRequestHeader("Content-Type", "application/json");
 
   x.responseType = 'json';
-  x.onload = function() {
+  x.onload = function () {
     // Parse and process the response from uptiverse
     var response = x.response;
     
@@ -90,7 +95,7 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
 
     callback(firstResult);
   };
-  x.onerror = function() {
+  x.onerror = function () {
     errorCallback('Network error.');
   };
   x.send(JSON.stringify(searchParams));
@@ -100,64 +105,106 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
-function clearCommentArea() {
-   var commentArea = document.getElementById('comments');
+function renderLinks(connections) {
+  removeElementsByClass('link');
+  var linkArea = document.getElementById('linkArea');
+  
+  if (connections.linkedIn) {
+    var linkedinLink = document.createElement('a');
+    linkedinLink.className += 'link';
+    linkedinLink.target = '_blank';
+    linkedinLink.href = linkedinUrl + connections.linkedIn;
+    linkedinLink.text = "LinkedIn";
+    linkArea.appendChild(linkedinLink);
+  }
+  if (connections.facebook) {
+    var facebookLink = document.createElement('a');
+    facebookLink.className += 'link';
+    facebookLink.target = '_blank';
+    facebookLink.href = facebookUrl + connections.facebook;
+    facebookLink.text = "Facebook";
+    linkArea.appendChild(facebookLink);
+  }
+  // connections.forEach(function (link) {
+  //   var linkItem = document.createElement('link');
+  //   var url = document.createElement('a');
+  //   switch (link) {
+  //     case 'linkedin':
+  //       url.href = linkedinUrl + link;
+  //       url.text = "LinkedIn";
+  //       break;
+  //   case 'facebook':
+  //       url.href = facebookUrl + link;
+  //       url.text = "Facebook";
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //     linkItem.appendChild(url);
+  //   })
+ }
 
-   var comments = document.getElementsByClassName('comment');
-   for(var i = comments.length - 1; 0 <= i; i--){
-      if(comments[i] && comments[i].parentElement){
-        comments[i].parentElement.removeChild(comments[i]);
+function removeElementsByClass(classname) {
+   var elementsToRemove = document.getElementsByClassName(classname);
+   for (var i = elementsToRemove.length - 1; 0 <= i; i--) {
+      if (elementsToRemove[i] && elementsToRemove[i].parentElement) {
+        elementsToRemove[i].parentElement.removeChild(elementsToRemove[i]);
       }
    }
 }
 
 //render a comment section 
-function renderCommentElement(comment) {
+function renderCommentElements(comments) {
+  removeElementsByClass('comment');
+  comments.forEach(function (comment) {
+    var mainElement = document.createElement('div');
+    mainElement.className += 'comment';
+    
+    var commentMetadata = document.createElement('span');
+    commentMetadata.className += 'commentMetadata';
+    var date = new Date(comment.date);
+    commentMetadata.innerText = comment.user + " - " + date.toLocaleDateString();
+    
+
+    var commentText = document.createElement('div');
+    commentText.innerText = comment.text;
+
+
+
+    mainElement.appendChild(commentMetadata);
+    mainElement.appendChild(document.createElement('br'));
+    mainElement.appendChild(commentText);
+    mainElement.appendChild(document.createElement('br'));
+    var commentArea = document.getElementById('comments');
+    commentArea.appendChild(mainElement);
+  }, this);
   
-  var mainElement = document.createElement('div');
-  mainElement.className += 'comment';
-  var commentMetadata = document.createElement('span');
-  var date = new Date(comment.date);
-  commentMetadata.innerText = comment.user + " - " + date.toLocaleDateString();
-  commentMetadata.className += 'commentMetadata';
-
-  var commentText = document.createElement('span');
-  commentText.innerText = comment.text;
-
-
-
-  mainElement.appendChild(commentMetadata);
-  mainElement.appendChild(document.createElement('br'));
-  mainElement.appendChild(commentText);
-  mainElement.appendChild(document.createElement('br'));
-  var commentArea = document.getElementById('comments');
-  commentArea.appendChild(mainElement);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
-//hook up an event listener to the Get info button
-document.querySelector('#submit').addEventListener('click', function(event) {
+  //hook up an event listener to the Get info button
+  document.querySelector('#submit').addEventListener('click', function (event) {
   
-  getCurrentTabUrl(function(url) { 
-    getRecruitInfo(url, function(recruit){
+    getCurrentTabUrl(function (url) { 
+      getRecruitInfo(url, function (recruit) {
 
         renderStatus(recruit.firstname + " " + recruit.lastname);
+        renderLinks(recruit.connections);
         recruit.comments.sort((a, b) => a.date < b.date);
-        clearCommentArea();
-        recruit.comments.forEach(function (comment) {
-          renderCommentElement(comment)
-        });
 
-    }, function(errorMessage) {
-      renderStatus(errorMessage);
-    });
+        renderCommentElements(recruit.comments);
+      
+
+      }, function (errorMessage) {
+        renderStatus(errorMessage);
+      });
     
   
     
-  });
+    });
 
-});
+  });
 
 });
 
