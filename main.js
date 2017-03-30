@@ -77,13 +77,13 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
     
     //validate response
     if (!response || !response.recruits ) {
-      errorCallback('No response from uptiverse service!');
+      errorCallback("No response from uptiverse service!");
       return;
     }
 
     //check if there are matches
     if (response.recruits.length === 0) {
-      errorCallback('No matches found :(');
+      errorCallback("No matches found :(");
       return;
     }
     var firstResult = response.recruits[0];
@@ -111,24 +111,25 @@ function clearCommentArea() {
    }
 }
 
+//render a comment section 
 function renderCommentElement(comment) {
   
-  var mainElement = document.createElement("div");
+  var mainElement = document.createElement('div');
   mainElement.className += 'comment';
-  var commentMetadata = document.createElement("span");
+  var commentMetadata = document.createElement('span');
   var date = new Date(comment.date);
-  commentMetadata.innerText = comment.user + ' - ' + date.toLocaleDateString();
+  commentMetadata.innerText = comment.user + " - " + date.toLocaleDateString();
   commentMetadata.className += 'commentMetadata';
 
-  var commentText = document.createElement("span");
+  var commentText = document.createElement('span');
   commentText.innerText = comment.text;
 
 
 
   mainElement.appendChild(commentMetadata);
-  mainElement.appendChild(document.createElement("br"));
+  mainElement.appendChild(document.createElement('br'));
   mainElement.appendChild(commentText);
-  mainElement.appendChild(document.createElement("br"));
+  mainElement.appendChild(document.createElement('br'));
   var commentArea = document.getElementById('comments');
   commentArea.appendChild(mainElement);
 }
@@ -140,8 +141,8 @@ document.querySelector('#submit').addEventListener('click', function(event) {
   
   getCurrentTabUrl(function(url) { 
     getRecruitInfo(url, function(recruit){
-      
-        renderStatus(recruit.firstname + ' ' + recruit.lastname);
+
+        renderStatus(recruit.firstname + " " + recruit.lastname);
         recruit.comments.sort((a, b) => a.date < b.date);
         clearCommentArea();
         recruit.comments.forEach(function (comment) {
