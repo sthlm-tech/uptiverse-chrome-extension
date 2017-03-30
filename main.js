@@ -125,23 +125,6 @@ function renderLinks(connections) {
     facebookLink.text = "Facebook";
     linkArea.appendChild(facebookLink);
   }
-  // connections.forEach(function (link) {
-  //   var linkItem = document.createElement('link');
-  //   var url = document.createElement('a');
-  //   switch (link) {
-  //     case 'linkedin':
-  //       url.href = linkedinUrl + link;
-  //       url.text = "LinkedIn";
-  //       break;
-  //   case 'facebook':
-  //       url.href = facebookUrl + link;
-  //       url.text = "Facebook";
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //     linkItem.appendChild(url);
-  //   })
  }
 
 function removeElementsByClass(classname) {
