@@ -109,9 +109,6 @@ function clearCommentArea() {
         comments[i].parentElement.removeChild(comments[i]);
       }
    }
-
-   
-   //commentArea.removeChild(commentArea.getElementsByClassName('comment'));
 }
 
 function renderCommentElement(comment) {
@@ -138,12 +135,12 @@ function renderCommentElement(comment) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-
+//hook up an event listener to the Get info button
 document.querySelector('#submit').addEventListener('click', function(event) {
   
   getCurrentTabUrl(function(url) { 
     getRecruitInfo(url, function(recruit){
-
+      
         renderStatus(recruit.firstname + ' ' + recruit.lastname);
         recruit.comments.sort((a, b) => a.date < b.date);
         clearCommentArea();
@@ -152,7 +149,7 @@ document.querySelector('#submit').addEventListener('click', function(event) {
         });
 
     }, function(errorMessage) {
-      renderStatus('Cannot display image. ' + errorMessage);
+      renderStatus(errorMessage);
     });
     
   
