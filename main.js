@@ -64,7 +64,6 @@ var dummyResponseData = {
 function getRecruitInfo(currentUrl, callback, errorCallback) {
   
   currentUrl = currentUrl.slice(0, -1);
-  
   var searchUrl = 'https://uptiverse-recruit.herokuapp.com/recruits/find';
 
   var searchParams = { "link": currentUrl };
@@ -132,7 +131,7 @@ function removeElementsByClass(classname) {
    for (var i = elementsToRemove.length - 1; 0 <= i; i--) {
       if (elementsToRemove[i] && elementsToRemove[i].parentElement) {
         elementsToRemove[i].parentElement.removeChild(elementsToRemove[i]);
-      }
+    }
    }
 }
 
@@ -152,15 +151,13 @@ function renderCommentElements(comments) {
     var commentText = document.createElement('div');
     commentText.innerText = comment.text;
 
-
-
     mainElement.appendChild(commentMetadata);
     mainElement.appendChild(document.createElement('br'));
     mainElement.appendChild(commentText);
     mainElement.appendChild(document.createElement('br'));
     var commentArea = document.getElementById('comments');
     commentArea.appendChild(mainElement);
-  }, this);
+  });
   
 }
 
