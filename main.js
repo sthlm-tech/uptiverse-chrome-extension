@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//Some url constants
+const facebookUrl = 'https://facebook.com/';
+const linkedinUrl = 'https://linkedin.com/in/';
+
 /**
  * Get the current URL.
  *
@@ -40,21 +44,7 @@ function getCurrentTabUrl(callback) {
 }
 
 
-const facebookUrl = 'https://facebook.com/';
-const linkedinUrl = 'https://linkedin.com/in/';
 
-var dummyResponseData = {
-  "source": "name",
-  "recruits": [
-    {
-      "_id": "58433f51602e9b312ca2ac6a", "lastname": "Dahlstrand", "firstname": "Ulf", "searchableName": "ulf dahlstrand",
-      "comments": [
-        { "user": "ulf.dahlstrand", "date": "2016-12-07T16:40:12.416Z", "text": "Detta är en test kommentar" },
-        { "user": "ulf.dahlstrand", "date": "2016-12-16T16:40:12.416Z", "text": "dfgsdfgdsf sdf dfg dfs g fdfd faeewr erew we w ew rwe r wer we rw fds sad fasd fasd fas dfdsa ds ds ds dfgsdfgdsf sdf dfg dfs g fdfd faeewr erew we w ew rwe r wer we rw fds sad fasd fasd fas dfdsa ds ds ds " }]
-      , "__v": 0,
-      "connections": { "linkedIn": "ulfdavidsson", "facebook": "ulf.davidsson" }
-    }]
-}
 /**
  * @param {string} currentUrl - the url of the current tab
  * @param {function(recruit)} callback - Called when a recruit is found
@@ -115,6 +105,10 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
   
 }
 
+/**
+ * 
+ * @param {string} statusText - the status text to be rendered
+ */
 function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
@@ -153,6 +147,7 @@ function removeElementsByClass(classname) {
 //render a comment section 
 function renderCommentElements(comments) {
   removeElementsByClass('comment');
+  comments.sort((a, b) => a.date < b.date);
   comments.forEach(function (comment) {
     var mainElement = document.createElement('div');
     mainElement.className += 'comment';
@@ -176,6 +171,9 @@ function renderCommentElements(comments) {
   
 }
 
+/**
+ * adding an event listener for when the dom is loaded (the dom of the extension)
+ */
 document.addEventListener('DOMContentLoaded', function () {
 
   //hook up an event listener to the Get info button
@@ -186,7 +184,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         renderStatus(recruit.firstname + " " + recruit.lastname);
         renderLinks(recruit.connections);
-        recruit.comments.sort((a, b) => a.date < b.date);
 
         renderCommentElements(recruit.comments);
       
@@ -194,9 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }, function (errorMessage) {
         renderStatus(errorMessage);
       });
-    
-  
-    
+
     });
 
   });
