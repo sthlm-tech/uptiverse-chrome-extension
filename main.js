@@ -43,34 +43,24 @@ function getCurrentTabUrl(callback) {
 
 }
 
-
-
 /**
- * @param {string} currentUrl - the url of the current tab
- * @param {function(recruit)} callback - Called when a recruit is found
- * @param {function(string)} errorCallback - Called when a recruit is not found or when there are issues with the request.
- *   The callback gets a string that describes the failure reason.
+ * 
+ * @param {string} statusText - the status text to be rendered
  */
-function getRecruitInfo(currentUrl, callback, errorCallback) {
-  
-  currentUrl = currentUrl.slice(0, -1);
-  var searchUrl = 'https://uptiverse-recruit.herokuapp.com/recruits/find';
-
-  var searchParams = { "link": currentUrl };
+function renderStatus(statusText) {
+  document.getElementById('status').textContent = statusText;
+}
 
 
-  var x = new XMLHttpRequest();
 
-  var cookieDetails = { name: 'id_token', domain: 'herokuapp.com'};
-  chrome.cookies.getAll(cookieDetails, function (cookie) {
 
-    if (cookie.length === 0) {
-      errorCallback("Please log in to uptiverse first!");
-      return;
-    }
-    var authToken =  'JWT ' + cookie[0].value;
+function executeRequest(url, requestType, requestData, callback, errorCallback) {
+    var x = new XMLHttpRequest();
 
-    x.open('POST', searchUrl);
+    var cookieDetails = { name: 'id_token', domain: 'uptiverse.herokuapp.com' };
+    parseAuthorizationCookie(function (authToken) {
+
+    x.open(requestType, url);
     x.setRequestHeader('Authorization', authToken);
     x.setRequestHeader("Content-Type", "application/json");
 
@@ -80,37 +70,78 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
       var response = x.response;
     
       //validate response
-      if (!response || !response.recruits ) {
+      if (!response ) {
         errorCallback("No response from uptiverse service!");
         return;
       }
 
-      //check if there are matches
-      if (response.recruits.length === 0) {
-        errorCallback("No matches found :(");
-        return;
-      }
-      var firstResult = response.recruits[0];
-
-      callback(firstResult);
+      callback(response);
     };
     x.onerror = function () {
       errorCallback('Network error.');
     };
-    x.send(JSON.stringify(searchParams));
+
+    if (requestData) {
+      x.send(JSON.stringify(requestData));
+    } else {
+      x.send();
+    }
+    
   
 
   });
 
 }
 
-/**
- * 
- * @param {string} statusText - the status text to be rendered
- */
-function renderStatus(statusText) {
-  document.getElementById('status').textContent = statusText;
+function parseAuthorizationCookie(callback, errorCallback) {
+    var cookieDetails = { name: 'id_token', domain: 'herokuapp.com' };
+  chrome.cookies.getAll(cookieDetails, function (cookie) {
+
+    if (cookie.length === 0) {
+      errorCallback("Please log in to uptiverse first!");
+      return;
+    }
+        var authToken =  'JWT ' + cookie[0].value;
+        callback(authToken);
+  });
 }
+
+function getRecruit(currentUrl, callback, errorCallback) {
+   currentUrl = currentUrl.slice(0, -1);
+  var searchUrl = 'https://uptiverse-recruit.herokuapp.com/recruits/find';
+
+  var requestData = { "link": currentUrl };
+  executeRequest(searchUrl, 'POST', requestData, function (response) {
+      //check if there are matches
+      if (response.recruits.length === 0) {
+        errorCallback("No matches found :(");
+        return;
+      }
+      callback(response.recruits[0]);
+  }, errorCallback);
+
+}
+
+
+/**
+ * @param {string} currentUrl - the url of the current tab
+ * @param {function(recruit)} callback - Called when a recruit is found
+ * @param {function(string)} errorCallback - Called when a recruit is not found or when there are issues with the request.
+ *   The callback gets a string that describes the failure reason.
+ */
+function getRecruitComments(recruit, callback, errorCallback) {
+  
+  // currentUrl = currentUrl.slice(0, -1);
+   var searchUrl = 'https://uptiverse-comments.herokuapp.com/comments/recruit-' + recruit._id;
+
+   executeRequest(searchUrl, 'GET', undefined, function (response) {
+     
+     callback(response);
+     
+   }, errorCallback);
+
+}
+
 
 /**
  * 
@@ -168,7 +199,8 @@ function renderCommentElements(comments) {
     var commentMetadata = document.createElement('span');
     commentMetadata.className += 'commentMetadata';
     var date = new Date(comment.date);
-    commentMetadata.innerText = comment.user + " - " + date.toLocaleDateString();
+    console.log(comment);
+    commentMetadata.innerText = comment.user.name.firstname + " " + comment.user.name.lastname + " - " + date.toLocaleDateString();
     
 
     var commentText = document.createElement('div');
@@ -193,17 +225,22 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#submit').addEventListener('click', function (event) {
   
     getCurrentTabUrl(function (url) { 
-      getRecruitInfo(url, function (recruit) {
-
+      getRecruit(url, function (recruit) {
         renderStatus(recruit.firstname + " " + recruit.lastname);
         renderLinks(recruit.connections);
+        
+        getRecruitComments(recruit, function (comments) {
 
-        renderCommentElements(recruit.comments);
+          renderCommentElements(comments);
       
 
+        }, function (errorMessage) {
+          renderStatus(errorMessage);
+        });
       }, function (errorMessage) {
-        renderStatus(errorMessage);
+          renderStatus(errorMessage);
       });
+      
 
     });
 
