@@ -73,6 +73,11 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
 
   var cookieDetails = { name: 'id_token', domain: 'herokuapp.com'};
   chrome.cookies.getAll(cookieDetails, function (cookie) {
+
+    if (!cookie) {
+      errorCallback("Unauthorized");
+      return;
+    }
     var authToken =  'JWT ' + cookie[0].value;
 
     x.open('POST', searchUrl);
