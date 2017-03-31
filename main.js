@@ -70,34 +70,44 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
 
 
   var x = new XMLHttpRequest();
-  x.open('POST', searchUrl);
-  x.setRequestHeader('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExMTE3ODgzMDU5NTU2MTU4MTkwNiIsImVtYWlsIjoib3NrYXIubGFyc3NvbkB1cHRpdmUuc2UiLCJ1c2VybmFtZSI6Im9za2FyLmxhcnNzb24iLCJuYW1lIjp7ImZpcnN0bmFtZSI6Im9za2FyIiwibGFzdG5hbWUiOiJsYXJzc29uIn0sImlhdCI6MTQ5MDg1ODg5MCwiZXhwIjoxNTA2NDEwODkwfQ.nCjIXO3ydSDbOVsFfFLyC0Y9Pxji3DuRVYGH2zJ-PxQ');
-  x.setRequestHeader("Content-Type", "application/json");
 
-  x.responseType = 'json';
-  x.onload = function () {
-    // Parse and process the response from uptiverse
-    var response = x.response;
+  var cookieDetails = { name: 'id_token', domain: 'herokuapp.com'};
+  chrome.cookies.getAll(cookieDetails, function (cookie) {
+    var authToken =  'JWT ' + cookie[0].value;
+
+    x.open('POST', searchUrl);
+    x.setRequestHeader('Authorization', authToken);
+    x.setRequestHeader("Content-Type", "application/json");
+
+    x.responseType = 'json';
+    x.onload = function () {
+
+      var response = x.response;
     
-    //validate response
-    if (!response || !response.recruits ) {
-      errorCallback("No response from uptiverse service!");
-      return;
-    }
+      //validate response
+      if (!response || !response.recruits ) {
+        errorCallback("No response from uptiverse service!");
+        return;
+      }
 
-    //check if there are matches
-    if (response.recruits.length === 0) {
-      errorCallback("No matches found :(");
-      return;
-    }
-    var firstResult = response.recruits[0];
+      //check if there are matches
+      if (response.recruits.length === 0) {
+        errorCallback("No matches found :(");
+        return;
+      }
+      var firstResult = response.recruits[0];
 
-    callback(firstResult);
-  };
-  x.onerror = function () {
-    errorCallback('Network error.');
-  };
-  x.send(JSON.stringify(searchParams));
+      callback(firstResult);
+    };
+    x.onerror = function () {
+      errorCallback('Network error.');
+    };
+    x.send(JSON.stringify(searchParams));
+  
+
+  });
+
+  
 }
 
 function renderStatus(statusText) {
