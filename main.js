@@ -102,7 +102,6 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
 
   });
 
-  
 }
 
 /**
@@ -113,6 +112,10 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
+/**
+ * 
+ * @param {Object} connections 
+ */
 function renderLinks(connections) {
   removeElementsByClass('link');
   var linkArea = document.getElementById('linkArea');
@@ -135,6 +138,10 @@ function renderLinks(connections) {
   }
  }
 
+/**
+ * 
+ * @param {string} classname - elements with this class name will be removed
+ */
 function removeElementsByClass(classname) {
    var elementsToRemove = document.getElementsByClassName(classname);
    for (var i = elementsToRemove.length - 1; 0 <= i; i--) {
@@ -144,7 +151,10 @@ function removeElementsByClass(classname) {
    }
 }
 
-//render a comment section 
+/**
+ * 
+ * @param {Object[]} comments 
+ */
 function renderCommentElements(comments) {
   removeElementsByClass('comment');
   comments.sort((a, b) => a.date < b.date);
