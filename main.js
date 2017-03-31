@@ -74,8 +74,8 @@ function getRecruitInfo(currentUrl, callback, errorCallback) {
   var cookieDetails = { name: 'id_token', domain: 'herokuapp.com'};
   chrome.cookies.getAll(cookieDetails, function (cookie) {
 
-    if (!cookie) {
-      errorCallback("Unauthorized");
+    if (cookie.length === 0) {
+      errorCallback("Please log in to uptiverse first!");
       return;
     }
     var authToken =  'JWT ' + cookie[0].value;
