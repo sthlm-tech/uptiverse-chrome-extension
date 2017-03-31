@@ -157,6 +157,9 @@ function removeElementsByClass(classname) {
  */
 function renderCommentElements(comments) {
   removeElementsByClass('comment');
+  if (!comments || comments.length == 0 ) {
+    return;
+  }
   comments.sort((a, b) => a.date < b.date);
   comments.forEach(function (comment) {
     var mainElement = document.createElement('div');
