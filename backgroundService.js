@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -444,202 +444,30 @@ class HttpHelper {
 
 
 /***/ }),
-/* 5 */,
-/* 6 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uptiverse_recruit_services_recruitService__ = __webpack_require__(0);
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+/// <reference path="node_modules/@types/chrome/index.d.ts"/>
 
-// Some url constants
-const facebookUrl = "https://facebook.com/";
-const linkedinUrl = "https://linkedin.com/in/";
-document.addEventListener("DOMContentLoaded", () => {
-    const m = new Main();
-    const refreshButton = document.getElementById("refreshButton");
-    refreshButton.addEventListener("click", () => {
-        m.loadRecruit();
+chrome.webNavigation.onCompleted.addListener(() => {
+    const queryInfo = {
+        active: true,
+        currentWindow: true,
+        status: "complete"
+    };
+    const rs = new __WEBPACK_IMPORTED_MODULE_0__uptiverse_recruit_services_recruitService__["a" /* default */]();
+    chrome.tabs.query(queryInfo, (tabs) => {
+        const tab = tabs[0];
+        const url = tab.url;
+        chrome.browserAction.setBadgeText({ text: "" });
+        if (url.toLowerCase().indexOf("linkedin.com/in") > -1) {
+            rs.init(url).then((response) => { });
+        }
     });
-    const commentButton = document.getElementById("addCommentButton");
-    commentButton.addEventListener("click", () => {
-        m.addComment();
-    });
-    const addRecruitButton = document.getElementById("addRecruitButton");
-    addRecruitButton.addEventListener("click", () => {
-        m.addRecruit();
-    });
-    m.loadRecruit();
 });
-class Main {
-    constructor() {
-        this.recruitService = new __WEBPACK_IMPORTED_MODULE_0__uptiverse_recruit_services_recruitService__["a" /* default */]();
-    }
-    addRecruit() {
-        const firstNameInputFieldValue = document.getElementById("newrecruit-firstname").value;
-        const lastNameInputFieldValue = document.getElementById("newrecruit-lastname").value;
-        const connectionInputFieldValue = document.getElementById("newrecruit-connection").value;
-        const idInputFieldValue = document.getElementById("newrecruit-id").value;
-        if (!firstNameInputFieldValue || !lastNameInputFieldValue || !connectionInputFieldValue || !idInputFieldValue) {
-            return;
-        }
-        const recruit = { id: idInputFieldValue, firstname: firstNameInputFieldValue, lastname: lastNameInputFieldValue, connection: connectionInputFieldValue };
-        this.recruitService.addRecruit(recruit).then(() => {
-            const addRecruitSection = document.getElementById("addRecruitSection");
-            addRecruitSection.hidden = true;
-            this.loadRecruit();
-        }).catch((errormessage) => {
-            this.renderStatus(errormessage);
-        });
-    }
-    addComment() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const comment = document.getElementById("commentField").value;
-            const url = yield this.getCurrentTabUrl();
-            this.recruitService.addComment(url, comment).then((comments) => {
-                this.renderCommentElements(comments);
-                document.getElementById("commentField").innerText = "";
-            }).catch((errormessage) => {
-                this.renderStatus(errormessage);
-            });
-        });
-    }
-    loadRecruit() {
-        this.getCurrentTabUrl().then((url) => {
-            this.recruitService.getCurrentRecruit(url).then((recruit) => {
-                if (!recruit.connections) {
-                    const commentSection = document.getElementById("commentSection");
-                    commentSection.hidden = true;
-                    const addRecruitSection = document.getElementById("addRecruitSection");
-                    addRecruitSection.hidden = false;
-                    const connectionInputField = document.getElementById("newrecruit-connection");
-                    connectionInputField.value = recruit.source;
-                    const idInputField = document.getElementById("newrecruit-id");
-                    idInputField.value = recruit.id;
-                }
-                else {
-                    this.renderStatus(recruit.firstname + " " + recruit.lastname);
-                    this.renderLinks(recruit.connections);
-                    this.recruitService.getCurrentRecruitsComments(recruit).then((comments) => {
-                        if (comments) {
-                            this.renderCommentElements(comments);
-                        }
-                    });
-                }
-            }).catch((errormessage) => {
-                this.renderStatus(errormessage);
-            });
-        });
-    }
-    getCurrentTabUrl() {
-        return new Promise((resolve, reject) => {
-            const queryInfo = { active: true, currentWindow: true };
-            chrome.tabs.query(queryInfo, (tabs) => {
-                // chrome.tabs.query invokes the callback with a list of tabs that match the
-                // query. When the popup is opened, there is certainly a window and at least
-                // one tab, so we can safely assume that |tabs| is a non-empty array.
-                // A window can only have one active tab at a time, so the array consists of
-                // exactly one tab.
-                const tab = tabs[0];
-                // A tab is a plain object that provides information about the tab.
-                // See https://developer.chrome.com/extensions/tabs#type-Tab
-                const url = tab.url;
-                // tab.url is only available if the "activeTab" permission is declared.
-                // If you want to see the URL of other tabs (e.g. after removing active:true
-                // from |queryInfo|), then the "tabs" permission is required to see their
-                // "url" properties.
-                console.assert(typeof url === "string", "tab.url should be a string");
-                if (url) {
-                    resolve(url);
-                }
-                else {
-                    reject("current url is undefined");
-                }
-            });
-        });
-    }
-    /**
-     *
-     * @param {string} statusText - the status text to be rendered
-     */
-    renderStatus(statusText) {
-        document.getElementById("status").textContent = statusText;
-    }
-    /**
-     *
-     * @param connections
-     */
-    renderLinks(connections) {
-        this.removeElementsByClass("link");
-        const linkArea = document.getElementById("linkArea");
-        if (connections.linkedIn) {
-            const linkedinLink = document.createElement("a");
-            linkedinLink.className += "link";
-            linkedinLink.target = "_blank";
-            linkedinLink.href = linkedinUrl + connections.linkedIn;
-            linkedinLink.text = "LinkedIn";
-            linkArea.appendChild(linkedinLink);
-        }
-        if (connections.facebook) {
-            const facebookLink = document.createElement("a");
-            facebookLink.className += "link";
-            facebookLink.target = "_blank";
-            facebookLink.href = facebookUrl + connections.facebook;
-            facebookLink.text = "Facebook";
-            linkArea.appendChild(facebookLink);
-        }
-    }
-    /**
-     *
-     * @param {string} classname - elements with this class name will be removed
-     */
-    removeElementsByClass(classname) {
-        const elementsToRemove = document.getElementsByClassName(classname);
-        for (let i = elementsToRemove.length - 1; 0 <= i; i--) {
-            if (elementsToRemove[i] && elementsToRemove[i].parentElement) {
-                elementsToRemove[i].parentElement.removeChild(elementsToRemove[i]);
-            }
-        }
-    }
-    /**
-     *
-     * @param {Object[]} comments
-     */
-    renderCommentElements(comments) {
-        this.removeElementsByClass("comment");
-        if (!comments || comments.length === 0) {
-            return;
-        }
-        comments.sort((a, b) => a.date > b.date);
-        comments.forEach((comment) => {
-            const mainElement = document.createElement("div");
-            mainElement.className += "comment";
-            const commentMetadata = document.createElement("span");
-            commentMetadata.className += "commentMetadata";
-            const date = new Date(comment.date);
-            commentMetadata.innerText = comment.user.name.firstname + " " + comment.user.name.lastname + " - " + date.toLocaleDateString();
-            const commentText = document.createElement("div");
-            commentText.innerText = comment.text;
-            mainElement.appendChild(commentMetadata);
-            mainElement.appendChild(document.createElement("br"));
-            mainElement.appendChild(commentText);
-            mainElement.appendChild(document.createElement("br"));
-            const commentArea = document.getElementById("comments");
-            commentArea.appendChild(mainElement);
-        });
-    }
-}
 
 
 /***/ })

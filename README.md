@@ -6,3 +6,4 @@
 3. Go to 'Window' -> 'Extensions' (or type chrome://extensions/ in the address field)
 4. Drag and drop the .crx file in to chrome
 5. Click 'Add extension'
+6. Log in to Uptiverse and start finding new recruits! :D

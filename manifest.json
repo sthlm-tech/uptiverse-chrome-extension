@@ -10,9 +10,14 @@
     "default_popup": "main.html"
   },
   "permissions": [
+    "webNavigation",
     "activeTab",
     "cookies",
-    "<all_urls>"
-    
-  ]
+    "<all_urls>",
+    "storage" 
+  ],
+  "background": {
+    "scripts": ["backgroundService.js"],
+    "persistent": false
+  }
 }
