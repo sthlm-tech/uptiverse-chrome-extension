@@ -64,8 +64,8 @@ class Main {
         const url = await this.getCurrentTabUrl();
 
         this.recruitService.addComment(url, comment).then((comments) => {
-            this.renderCommentElements(comments);
-            (document.getElementById("commentField") as HTMLInputElement).innerText = "";
+            this.loadRecruit();
+            (document.getElementById("commentField") as HTMLInputElement).value = "";
         }).catch((errormessage) => {
             this.renderStatus(errormessage);
         });

@@ -508,8 +508,8 @@ class Main {
             const comment = document.getElementById("commentField").value;
             const url = yield this.getCurrentTabUrl();
             this.recruitService.addComment(url, comment).then((comments) => {
-                this.renderCommentElements(comments);
-                document.getElementById("commentField").innerText = "";
+                this.loadRecruit();
+                document.getElementById("commentField").value = "";
             }).catch((errormessage) => {
                 this.renderStatus(errormessage);
             });
