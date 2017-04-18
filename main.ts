@@ -164,6 +164,7 @@ class Main {
             chrome.tabs.query(queryInfo, (tabs) => {
                 const tab = tabs[0];
                 const title = tab.title;
+
                 console.assert(typeof title === "string", "tab.title should be a string");
 
                 if (title) {
