@@ -140,6 +140,29 @@ class Main {
 
     }
 
+    private getCurrentTabTitle(): Promise<string> {
+
+        return new Promise<string>((resolve, reject) => {
+            const queryInfo = {active: true, currentWindow: true};
+
+            chrome.tabs.query(queryInfo, (tabs) => {
+                const tab = tabs[0];
+
+                const title = tab.title;
+
+                console.assert(typeof title === "string", "tab.title should be a string");
+
+                if (title) {
+                    resolve(title);
+                } else {
+                    reject("current title is undefined");
+                }
+            });
+
+        });
+
+    }
+
     /**
      *
      * @param {string} statusText - the status text to be rendered
