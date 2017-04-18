@@ -38,6 +38,7 @@ class Main {
     public addRecruit() {
         const firstNameInputFieldValue = (document.getElementById("newrecruit-firstname") as HTMLInputElement).value;
         const lastNameInputFieldValue = (document.getElementById("newrecruit-lastname") as HTMLInputElement).value;
+
         const connectionInputFieldValue = (document.getElementById("newrecruit-connection") as HTMLInputElement).value;
         const idInputFieldValue = (document.getElementById("newrecruit-id") as HTMLInputElement).value;
 
@@ -87,6 +88,15 @@ class Main {
 
                     const idInputField = document.getElementById("newrecruit-id") as HTMLInputElement;
                     idInputField.value = recruit.id;
+
+                    this.getCurrentTabTitle().then((title: string) => {
+                      const firstNameInputField = (document.getElementById("newrecruit-firstname") as HTMLInputElement);
+                      const lastNameInputField = (document.getElementById("newrecruit-lastname") as HTMLInputElement);
+                      const names = this.getNameFromTitle(title).split(" ");
+                      if(names.length >= 1){firstNameInputField.value = names[0];}
+                      if(names.length >= 2){lastNameInputField.value = names[1];}
+                    });
+
                 } else {
                     this.renderStatus(recruit.firstname + " " + recruit.lastname);
                     this.renderLinks(recruit.connections);
@@ -104,6 +114,12 @@ class Main {
             });
 
         });
+    }
+
+    private getNameFromTitle(title: string): string {
+      var name = title.replace("| LinkedIn","");
+      name = name.trim();
+      return name;
     }
 
     private getCurrentTabUrl(): Promise<string> {
@@ -147,7 +163,6 @@ class Main {
 
             chrome.tabs.query(queryInfo, (tabs) => {
                 const tab = tabs[0];
-
                 const title = tab.title;
 
                 console.assert(typeof title === "string", "tab.title should be a string");

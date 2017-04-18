@@ -14,10 +14,10 @@
     "activeTab",
     "cookies",
     "<all_urls>",
-    "storage" 
+    "storage"
   ],
-  "background": {
-    "scripts": ["backgroundService.js"],
+  "background": { 
+    "scripts": ["/build/backgroundService.js"],
     "persistent": false
   }
 }
