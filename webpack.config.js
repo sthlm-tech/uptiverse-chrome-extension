@@ -6,7 +6,7 @@ module.exports = {
         'backgroundService': './backgroundService.ts'
     },
     output: {
-    filename: '[name].js'
+    filename: './build/[name].js'
     },
 
     resolve: {
@@ -23,8 +23,7 @@ module.exports = {
       loader: "json-loader"
     }
     ]
-  }, 
+  },
   watch: true
 
 };
-
