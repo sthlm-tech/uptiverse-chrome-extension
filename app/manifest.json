@@ -1,0 +1,33 @@
+{
+  "name": "Uptiverse chrome extension",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "use to quickly add recruits from linkedin",
+  "icons": {
+    "16": "images/uptive_icon.png",
+    "128": "images/uptive_icon.png"
+  },
+  "background": {
+    "scripts": [
+      "build/background.js"
+    ]
+  },
+  "permissions": [
+    "webNavigation",
+    "tabs",
+    "activeTab",
+    "cookies",
+    "<all_urls>",
+    "storage",
+    "https://www.linkedin/in/*",
+    "http://uptiverse.herokuapp.com/"
+  ],
+  "browser_action": {
+    "default_icon": {
+      "19": "images/uptive_icon.png",
+      "38": "images/uptive_icon.png"
+    },
+    "default_title": "test-extension",
+    "default_popup": "popup.html"
+  }
+}

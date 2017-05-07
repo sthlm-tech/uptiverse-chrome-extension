@@ -2,21 +2,21 @@
 
 module.exports = {
     entry: {
-        'main': './main.ts',
-        'backgroundService': './backgroundService.ts'
+        'popup': './app/scripts.babel/popup.js',
+        'background': './app/scripts.babel/background.js'
     },
     output: {
-    filename: './build/[name].js'
+    filename: './app/build/[name].js'
     },
 
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.js']
     },
 
     module: {
     loaders: [ // loaders will work with webpack 1 or 2; but will be renamed "rules" in future
       // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-      { test: /\.tsx?$/, loader: 'ts-loader', exclude: /node_modules/
+      { test: /\.js?$/, loader: 'babel-loader', exclude: /node_modules/
     },
       {
       test: /\.json$/,
