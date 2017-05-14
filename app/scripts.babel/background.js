@@ -1,6 +1,5 @@
 import recruitService from './services/recruitService.js';
 import commentService from './services/commentService.js';
-import userHelper from './common/userHelper.js';
 
 
   chrome.webNavigation.onCompleted.addListener(function(){

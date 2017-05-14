@@ -27,7 +27,8 @@
     }
   },
   "dependencies": {
-    "jwt-decode": "^2.2.0"
+    "jwt-decode": "^2.2.0",
+    "webpack-dev-server": "^2.4.5"
   },
   "scripts": {
     "build-dev": "webpack --watch --display-modules",
